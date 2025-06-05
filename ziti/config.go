@@ -48,6 +48,12 @@ type Config struct {
 	//EnableHa will signal to the SDK to query and use OIDC authentication which is required for HA controller setups.
 	//This is a temporary feature flag that will be removed and "default to true" at a later date.
 	EnableHa bool `json:"enableHa"`
+
+	RouterProxy *RouterProxy `json:"routerProxy,omitempty"`
+}
+
+type RouterProxy struct {
+	Address string `json:"address"`
 }
 
 // NewConfig will create a new Config object from a provided Ziti Edge Client API URL and identity configuration.

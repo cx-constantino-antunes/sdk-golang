@@ -194,6 +194,7 @@ type ContextImpl struct {
 
 	events.EventEmmiter
 	lastSuccessfulApiSessionRefresh time.Time
+	routerProxy                     *transport.ProxyConfiguration
 }
 
 func (context *ContextImpl) AddServiceAddedListener(handler func(Context, *rest_model.ServiceDetail)) func() {
@@ -1387,13 +1388,20 @@ func (context *ContextImpl) connectEdgeRouter(routerName, ingressUrl string) *ed
 		}
 	}
 
-	dialer := channel.NewClassicDialer(channel.DialerConfig{
+	dialerConfig := channel.DialerConfig{
 		Identity: identity.NewIdentity(id),
 		Endpoint: ingAddr,
 		Headers: map[int32][]byte{
 			edge.SessionTokenHeader: context.CtrlClt.GetCurrentApiSession().GetToken(),
 		},
-	})
+		TransportConfig: map[interface{}]interface{}{},
+	}
+
+	if context.routerProxy != nil {
+		dialerConfig.TransportConfig[transport.KeyCachedProxyConfiguration] = context.routerProxy
+	}
+
+	dialer := channel.NewClassicDialer(dialerConfig)
 
 	start := time.Now().UnixNano()
 	edgeConn := network.NewEdgeConnFactory(routerName, ingressUrl, context)
