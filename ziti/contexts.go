@@ -26,7 +26,6 @@
 package ziti
 
 import (
-	"fmt"
 	"github.com/kataras/go-events"
 	"github.com/michaelquigley/pfxlog"
 	"github.com/openziti/edge-api/rest_model"
@@ -100,7 +99,7 @@ func NewContextWithOpts(cfg *Config, options *Options) (Context, error) {
 	}
 
 	if cfg.RouterProxy != nil {
-		fmt.Printf("using router proxy: %s\n", cfg.RouterProxy.Address)
+		pfxlog.Logger().Infof("using router proxy: %s", cfg.RouterProxy.Address)
 		newContext.routerProxy = &transport.ProxyConfiguration{
 			Type:    transport.ProxyTypeHttpConnect,
 			Address: cfg.RouterProxy.Address,
