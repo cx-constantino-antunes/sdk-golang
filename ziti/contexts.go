@@ -32,6 +32,7 @@ import (
 	edge_apis "github.com/openziti/sdk-golang/edge-apis"
 	"github.com/openziti/sdk-golang/ziti/edge"
 	"github.com/openziti/sdk-golang/ziti/edge/posture"
+	"github.com/openziti/transport/v2"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/pkg/errors"
 	"net/url"
@@ -95,6 +96,14 @@ func NewContextWithOpts(cfg *Config, options *Options) (Context, error) {
 		cfg.Credentials = idCredentials
 	} else if cfg.Credentials == nil {
 		return nil, errors.New("either cfg.ID or cfg.Credentials must be provided")
+	}
+
+	if cfg.RouterProxy != nil {
+		pfxlog.Logger().Infof("using router proxy: %s", cfg.RouterProxy.Address)
+		newContext.routerProxy = &transport.ProxyConfiguration{
+			Type:    transport.ProxyTypeHttpConnect,
+			Address: cfg.RouterProxy.Address,
+		}
 	}
 
 	var apiStrs []string
