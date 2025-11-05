@@ -19,14 +19,15 @@ package ziti
 import (
 	"crypto/x509"
 	"encoding/json"
+	"net/http"
+	"net/url"
+	"os"
+
 	"github.com/openziti/edge-api/rest_util"
 	"github.com/openziti/identity"
 	apis "github.com/openziti/sdk-golang/edge-apis"
 	"github.com/openziti/transport/v2"
 	"github.com/pkg/errors"
-	"net/http"
-	"net/url"
-	"os"
 )
 
 type Config struct {
@@ -61,6 +62,8 @@ type Config struct {
 	//Allows providing a function which controls how/where connections to a router are proxied.
 	RouterProxy func(addr string) *transport.ProxyConfiguration `json:"-"`
 
+	RouterProxyCfg *RouterProxyCfg `json:"routerProxy,omitempty"`
+
 	// If set to a number greater than one, the sdk will attempt to create multiple connections to edge routers.
 	// This configuration value should not be considered part of the stable API yet. It currently defaults to one,
 	// but it may default to a larger number at some point in the future or be removed. If set to zero, it will
@@ -72,6 +75,10 @@ type Config struct {
 	// part of the stable API yet. It currently defaults to zero, but it may default to 1 at some point in the future
 	// or be removed.
 	MaxControlConnections uint32 `json:"-"`
+}
+
+type RouterProxyCfg struct {
+	Address string `json:"address"`
 }
 
 func (cfg *Config) SetMaxControlConnections(val uint32) {
